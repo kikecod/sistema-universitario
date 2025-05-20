@@ -10,6 +10,8 @@ import com.example.sistemauniversitario.repository.ParaleloRepository;
 import com.example.sistemauniversitario.service.ParaleloService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 
@@ -34,6 +36,7 @@ public class ParaleloServiceImpl implements ParaleloService {
                 .build();
     }
 
+    @CacheEvict(value = "paralelos", allEntries = true)
     @Override
     public ParaleloDTO crear (ParaleloDTO dto){
         Materia materia = materiaRepository.findByNombre(dto.getNombreMateria());
@@ -60,6 +63,7 @@ public class ParaleloServiceImpl implements ParaleloService {
         return convertirADTO(paralelo, materia, docente);
     }
 
+    @Cacheable("paralelos")
     @Override
     public List<ParaleloDTO> listar(){
         return paraleloRepository.findAll().stream()

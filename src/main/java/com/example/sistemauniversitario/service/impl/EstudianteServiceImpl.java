@@ -7,7 +7,8 @@ import com.example.sistemauniversitario.service.EstudianteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.example.sistemauniversitario.validation.EstudianteValidator;
-
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import java.util.List;
 
 @Service
@@ -47,6 +48,7 @@ public class EstudianteServiceImpl implements EstudianteService {
                 .build();
     }
 
+    @CacheEvict(value = { "estudiantes", "estudianteDetalle" }, allEntries = true)
     @Override
     public EstudianteDTO crear(EstudianteDTO dto) {
         if (!estudianteValidator.validarTelefono(dto.getTelefono())) {
@@ -57,6 +59,7 @@ public class EstudianteServiceImpl implements EstudianteService {
         return mapearADTO(guardado);
     }
 
+    @Cacheable("estudiantes")
     @Override
     public List<EstudianteDTO> listar() {
         return estudianteRepository.findAllByActivoTrue().stream()
@@ -64,6 +67,7 @@ public class EstudianteServiceImpl implements EstudianteService {
                 .toList();
     }
 
+    @Cacheable(value = "estudianteDetalle", key = "#id")
     @Override
     public EstudianteDTO obtenerporId(Long id) {
         Estudiante estudiante = estudianteRepository.findById(id)
@@ -89,6 +93,7 @@ public class EstudianteServiceImpl implements EstudianteService {
         return mapearADTO(estudianteRepository.save(estudiante));
     }
 
+    @CacheEvict(value = { "estudiantes", "estudianteDetalle" }, allEntries = true)
     @Override
     public void eliminar(Long id){
         Estudiante estudiante = estudianteRepository.findById(id)

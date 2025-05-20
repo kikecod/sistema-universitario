@@ -4,6 +4,8 @@ import com.example.sistemauniversitario.dto.MateriaBaseDTO;
 import com.example.sistemauniversitario.model.Materia;
 import com.example.sistemauniversitario.repository.MateriaRepository;
 import com.example.sistemauniversitario.service.MateriaBaseService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,7 @@ public class MateriaBaseServiceImpl implements MateriaBaseService {
                 .build();
     }
 
+    @CacheEvict(value = "materias", allEntries = true)
     @Override
     public List<MateriaBaseDTO> mostrar(){
         return materiaRepository.findAllByActivaTrue().stream()
@@ -54,6 +57,7 @@ public class MateriaBaseServiceImpl implements MateriaBaseService {
         return convertirADTO(guardado);
     }
 
+    @CacheEvict(value = "materias", allEntries = true)
     @Override
     public MateriaBaseDTO actualizar(MateriaBaseDTO dto, Long id){
         Materia materia = materiaRepository.findById(id)
@@ -66,6 +70,7 @@ public class MateriaBaseServiceImpl implements MateriaBaseService {
         return convertirADTO(materiaRepository.save(materia));
     }
 
+    @CacheEvict(value = "materias", allEntries = true)
     @Override
     public void eliminar(Long id){
         Materia materia = materiaRepository.findById(id)

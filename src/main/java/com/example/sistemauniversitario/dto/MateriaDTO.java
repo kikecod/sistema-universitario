@@ -7,11 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MateriaDTO {
+public class MateriaDTO implements Serializable {
 
     @NotBlank(message = "El nombre de la materia es obligatorio")
     private String materia;

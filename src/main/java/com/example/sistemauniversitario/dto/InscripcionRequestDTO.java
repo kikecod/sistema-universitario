@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InscripcionRequestDTO {
+public class InscripcionRequestDTO  implements Serializable {
 
     @NotNull(message = "El ID del estudiante es obligatorio")
     private Long idEstudiante;

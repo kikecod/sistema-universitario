@@ -15,7 +15,7 @@ import jakarta.validation.constraints.*;
 @AllArgsConstructor
 @Builder
 
-public class EstudianteDTO {
+public class EstudianteDTO implements Serializable {
 
     private Long id;
 

@@ -13,6 +13,8 @@ import com.example.sistemauniversitario.repository.ParaleloRepository;
 import com.example.sistemauniversitario.service.InscripcionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,12 @@ public class InscripcionServiceImpl implements InscripcionService {
     private final ParaleloRepository paraleloRepository;
 
     // Implementar el método de inscripción
+    @CacheEvict(value = {
+            "inscripciones",
+            "inscripcionesPorEstudiante",
+            "inscripcionesPorParalelo",
+            "inscripcionDetalle"
+    }, allEntries = true)
     @Override
     public InscripcionDTO inscribir (InscripcionRequestDTO inscripcionRequestDTO) {
         if (inscripcionRequestDTO.getIdEstudiante() == null) {
@@ -58,6 +66,7 @@ public class InscripcionServiceImpl implements InscripcionService {
         inscripcion = inscripcionRepository.save(inscripcion);
         return convertir(inscripcion, estudiante, paralelo);
     }
+    @Cacheable("inscripciones")
     @Override
     public List<InscripcionDTO> listar (){
         return inscripcionRepository.findAllByActivoTrue().stream()
@@ -69,6 +78,7 @@ public class InscripcionServiceImpl implements InscripcionService {
                 .toList();
     }
 
+    @Cacheable(value = "inscripcionesPorEstudiante", key = "#idEstudiante")
     @Override
     public List<InscripcionDTO> obtenerPorIdEstudiante(Long idEstudiante) {
         Estudiante estudiante = estudianteRepository.findById(idEstudiante)
@@ -80,6 +90,7 @@ public class InscripcionServiceImpl implements InscripcionService {
                 .toList();
     }
 
+    @Cacheable(value = "inscripcionesPorParalelo", key = "#idParalelo")
     @Override
     public List<InscripcionDTO> obtenerPorIdParalelo (Long idParalelo){
         Paralelo paralelo = paraleloRepository.findById(idParalelo)
@@ -91,13 +102,19 @@ public class InscripcionServiceImpl implements InscripcionService {
                 .toList();
     }
 
+    @Cacheable(value = "inscripcionDetalle", key = "#id")
     @Override
     public InscripcionDTO obtenerPorId (Long id){
         Inscripcion inscripcion = inscripcionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Inscripcion no encontrado"));
         return convertir(inscripcion, inscripcion.getEstudiante(), inscripcion.getParalelo());
     }
-
+    @CacheEvict(value = {
+            "inscripciones",
+            "inscripcionesPorEstudiante",
+            "inscripcionesPorParalelo",
+            "inscripcionDetalle"
+    }, allEntries = true)
     @Override
     public InscripcionDTO actualizar (Long id, InscripcionDTO inscripcionDTO) {
         Inscripcion inscripcion = inscripcionRepository.findById(id)
@@ -119,6 +136,13 @@ public class InscripcionServiceImpl implements InscripcionService {
                 inscripcion.getParalelo()
         );
     }
+    @CacheEvict(value = {
+            "inscripciones",
+            "inscripcionesPorEstudiante",
+            "inscripcionesPorParalelo",
+            "inscripcionDetalle"
+    }, allEntries = true)
+
     @Override
     public void eliminar (Long id){
         Inscripcion inscripcion = inscripcionRepository.findById(id)
