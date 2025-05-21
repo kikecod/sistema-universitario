@@ -51,5 +51,4 @@ public class EstudianteDTO implements Serializable {
 
     @NotBlank(message = "El estudiante tiene que tener una carrera asignada")
     private String carrera;
-
 }
